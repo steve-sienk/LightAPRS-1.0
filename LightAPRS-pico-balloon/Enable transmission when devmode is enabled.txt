@@ -1,0 +1,88 @@
+// Add this function near the top of the file, after other #include statements
+#if defined(DEVMODE)
+#include <StreamString.h>
+
+void transmitSerialOutput(const char* message) {
+  StreamString ss;
+  ss.print(message);
+  
+  char transmitBuffer[200];  // Adjust size as needed
+  ss.toCharArray(transmitBuffer, sizeof(transmitBuffer));
+  
+  AprsPinOutput;
+  RfON;
+  delay(2000);
+  RfPttON;
+  delay(1000);
+  
+  APRS_sendMsg(transmitBuffer, strlen(transmitBuffer));
+  
+  delay(50);
+  while(digitalRead(1)){;}  // LibAprs TX Led pin PB1
+  delay(50);
+  RfPttOFF;
+  RfOFF;
+  AprsPinInput;
+}
+#endif
+
+// Modify the gpsDebug function
+void gpsDebug() {
+#if defined(DEVMODE)
+  StreamString debugOutput;
+  debugOutput.println();
+  debugOutput.println(F("Sats HDOP Latitude   Longitude   Fix  Date       Time     Date Alt    Course Speed Card Chars Sentences Checksum"));
+  debugOutput.println(F("          (deg)      (deg)       Age                      Age  (m)    --- from GPS ----  RX    RX        Fail"));
+  debugOutput.println(F("-----------------------------------------------------------------------------------------------------------------"));
+
+  printInt(gps.satellites.value(), gps.satellites.isValid(), 5, debugOutput);
+  printInt(gps.hdop.value(), gps.hdop.isValid(), 5, debugOutput);
+  printFloat(gps.location.lat(), gps.location.isValid(), 11, 6, debugOutput);
+  printFloat(gps.location.lng(), gps.location.isValid(), 12, 6, debugOutput);
+  printInt(gps.location.age(), gps.location.isValid(), 5, debugOutput);
+  printDateTime(gps.date, gps.time, debugOutput);
+  printFloat(gps.altitude.meters(), gps.altitude.isValid(), 7, 2, debugOutput);
+  printFloat(gps.course.deg(), gps.course.isValid(), 7, 2, debugOutput);
+  printFloat(gps.speed.kmph(), gps.speed.isValid(), 6, 2, debugOutput);
+  printStr(gps.course.isValid() ? TinyGPSPlus::cardinal(gps.course.value()) : "*** ", 6, debugOutput);
+
+  printInt(gps.charsProcessed(), true, 6, debugOutput);
+  printInt(gps.sentencesWithFix(), true, 10, debugOutput);
+  printInt(gps.failedChecksum(), true, 9, debugOutput);
+  debugOutput.println();
+
+  Serial.print(debugOutput);
+  transmitSerialOutput(debugOutput.c_str());
+#endif
+}
+
+// Modify the helper functions to use StreamString
+static void printFloat(float val, bool valid, int len, int prec, StreamString& output)
+{
+#if defined(DEVMODE)
+  // ... (keep existing code, but use output.print instead of Serial.print)
+#endif
+}
+
+static void printInt(unsigned long val, bool valid, int len, StreamString& output)
+{
+#if defined(DEVMODE)
+  // ... (keep existing code, but use output.print instead of Serial.print)
+#endif
+}
+
+static void printDateTime(TinyGPSDate &d, TinyGPSTime &t, StreamString& output)
+{
+#if defined(DEVMODE)
+  // ... (keep existing code, but use output.print instead of Serial.print)
+#endif
+}
+
+static void printStr(const char *str, int len, StreamString& output)
+{
+#if defined(DEVMODE)
+  // ... (keep existing code, but use output.print instead of Serial.print)
+#endif
+}
+
+Version 3 of 3

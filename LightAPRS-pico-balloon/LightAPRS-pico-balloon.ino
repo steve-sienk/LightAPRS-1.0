@@ -41,7 +41,7 @@ char  Symbol='O'; // '/O' for balloon, '/>' for car, for more info : http://www.
 bool  alternateSymbolTable = false ; //false = '/' , true = '\'
 
 char comment[50] = "https://bartold.sienkowski.com/"; // Max 50 char
-char StatusMessage[50] = "Bartold-3: Hello world!!!";
+char StatusMessage[50] = "Sienkowski-11: Hello world!!!";
 //*****************************************************************************
 
 
